@@ -2,3 +2,6 @@
 name = "dec64"
 version = "0.1.0"
 authors = ["Maciej Hirsz <maciej.hirsz@gmail.com>"]
+
+[dev-dependencies]
+dtoa = "0.1"
