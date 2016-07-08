@@ -61,11 +61,11 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i1
     }
 
     loop {
-        p2 = (p2 << 3) + (p2 << 1);
-        delta = (delta << 3) + (delta << 1);
+        p2 *= 10;
+        delta *= 10;
         let d = (p2 >> -one.e) as u8;
         if d != 0 || buffer != 0 {
-            buffer = (buffer << 3) + (buffer << 1) + d as u64;
+            buffer = buffer * 10 + d as u64;
         }
         p2 &= one.f - 1;
         kappa = kappa.wrapping_sub(1);

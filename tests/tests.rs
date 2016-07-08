@@ -266,3 +266,43 @@ fn write_midperiod() {
 
     assert_eq!(string, "123.456");
 }
+
+#[test]
+fn write_small() {
+    let dec = Dec64::from_parts(1, -5);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "0.00001");
+}
+
+#[test]
+fn write_tiny() {
+    let dec = Dec64::from_parts(123456, -35);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "1.23456e-30");
+}
+
+
+#[test]
+fn write_huge() {
+    let dec = Dec64::from_parts(123456, 30);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "123456e30");
+}
