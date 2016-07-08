@@ -138,6 +138,24 @@ fn roundtrip_tiny_f64() {
 }
 
 #[test]
+fn roundtrip_huge_neg_f64() {
+    let dec = Dec64::from(-1.23456e100);
+
+    let num: f64 = dec.into();
+
+    assert_eq!(num, -1.23456e100);
+}
+
+#[test]
+fn roundtrip_tiny_neg_f64() {
+    let dec = Dec64::from(-1.23456e-100);
+
+    let num: f64 = dec.into();
+
+    assert_eq!(num, -1.23456e-100);
+}
+
+#[test]
 fn compose_f64_pi() {
     let dec = Dec64::from_parts(3141592653589793, -15);
 

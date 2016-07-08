@@ -1,7 +1,7 @@
 use diyfp::{ self, DiyFp };
 
 #[inline]
-unsafe fn grisu_round(buffer: &mut i64, delta: u64, mut rest: u64, ten_kappa: u64, wp_w: u64) {
+unsafe fn grisu_round(buffer: &mut u64, delta: u64, mut rest: u64, ten_kappa: u64, wp_w: u64) {
     while rest < wp_w && delta - rest >= ten_kappa &&
            (rest + ten_kappa < wp_w || // closer
             wp_w - rest > rest + ten_kappa - wp_w) {
@@ -24,7 +24,8 @@ fn count_decimal_digit32(n: u32) -> i16 {
     else { 9 }
 }
 
-unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i16) {
+#[inline]
+unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (u64, i16) {
     static POW10: [u32; 10] = [ 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 ];
     let one = DiyFp::new(1u64 << -mp.e, mp.e);
     let wp_w = mp - w;
@@ -32,7 +33,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i1
     let mut p2 = mp.f & (one.f - 1);
     let mut kappa = count_decimal_digit32(p1); // kappa in [0, 9]
 
-    let mut buffer = p1 as i64;
+    let mut buffer = p1 as u64;
 
     while kappa > 0 {
         match kappa {
@@ -51,10 +52,10 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i1
         let tmp = ((p1 as u64) << -one.e) + p2;
         if tmp <= delta {
             k += kappa;
-            let power = POW10[kappa as usize];
-            buffer /= power as i64;
+            let pow10 = POW10[kappa as usize] as u64;
+            buffer /= pow10;
 
-            grisu_round(&mut buffer, delta, tmp, (power as u64) << -one.e, wp_w.f);
+            grisu_round(&mut buffer, delta, tmp, pow10 << -one.e, wp_w.f);
             return (buffer, k);
         }
     }
@@ -64,7 +65,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i1
         delta = (delta << 3) + (delta << 1);
         let d = (p2 >> -one.e) as u8;
         if d != 0 || buffer != 0 {
-            buffer = (buffer << 3) + (buffer << 1) + d as i64;
+            buffer = (buffer << 3) + (buffer << 1) + d as u64;
         }
         p2 &= one.f - 1;
         kappa = kappa.wrapping_sub(1);
@@ -79,7 +80,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i1
 }
 
 #[inline]
-pub fn convert(float: f64) -> (i64, i16) {
+pub fn convert(float: f64) -> (u64, i16) {
     unsafe {
         let v = DiyFp::from_f64(float);
         let (w_m, w_p) = v.normalized_boundaries();
