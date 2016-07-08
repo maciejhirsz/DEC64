@@ -93,8 +93,26 @@ fn roundtrip_i64() {
 }
 
 #[test]
+fn roundrtrip_f32() {
+    let dec = Dec64::from(3.141592653589793_f32);
+
+    let num: f32 = dec.into();
+
+    assert_eq!(num, 3.141592653589793_f32);
+}
+
+#[test]
+fn roundrtrip_f64() {
+    let dec = Dec64::from(3.141592653589793_f64);
+
+    let num: f64 = dec.into();
+
+    assert_eq!(num, 3.141592653589793_f64);
+}
+
+#[test]
 fn compose_f64_pi() {
-    let dec = Dec64::from_raw_parts(3141592653589793, -15);
+    let dec = Dec64::from_parts(3141592653589793, -15);
 
     let num: f64 = dec.into();
 
@@ -103,7 +121,7 @@ fn compose_f64_pi() {
 
 #[test]
 fn compose_f32_pi() {
-    let dec = Dec64::from_raw_parts(3141592653589793, -15);
+    let dec = Dec64::from_parts(3141592653589793, -15);
 
     let num: f32 = dec.into();
 
@@ -112,22 +130,22 @@ fn compose_f32_pi() {
 
 #[test]
 fn compose_max() {
-    let dec = Dec64::from_raw_parts(dec64::MAX_COEFFICIENT, 127);
+    let dec = Dec64::from_parts(dec64::MAX_COEFFICIENT, 127);
 
     assert_eq!(dec, dec64::MAX);
 }
 
 #[test]
 fn compose_min() {
-    let dec = Dec64::from_raw_parts(dec64::MIN_COEFFICIENT, -127);
+    let dec = Dec64::from_parts(dec64::MIN_COEFFICIENT, -127);
 
     assert_eq!(dec, dec64::MIN);
 }
 
 #[test]
 fn compose_nan() {
-    let nan_normal = Dec64::from_raw_parts(0, -128);
-    let nan_subnormal = Dec64::from_raw_parts(42, -128);
+    let nan_normal = Dec64::from_parts(0, -128);
+    let nan_subnormal = Dec64::from_parts(42, -128);
 
     assert!(nan_normal.is_nan());
     assert!(nan_subnormal.is_nan());
@@ -138,9 +156,9 @@ fn compose_nan() {
 
 #[test]
 fn compose_zero() {
-    let zero_normal = Dec64::from_raw_parts(0, 0);
-    let zero_high = Dec64::from_raw_parts(0, 127);
-    let zero_low = Dec64::from_raw_parts(0, -127);
+    let zero_normal = Dec64::from_parts(0, 0);
+    let zero_high = Dec64::from_parts(0, 127);
+    let zero_low = Dec64::from_parts(0, -127);
 
     assert!(zero_normal.is_zero());
     assert!(zero_high.is_zero());
@@ -153,7 +171,7 @@ fn compose_zero() {
 
 #[test]
 fn write_42() {
-    let dec = Dec64::from_raw_parts(42, 0);
+    let dec = Dec64::from_parts(42, 0);
 
     let mut buf: Vec<u8> = Vec::new();
 
@@ -166,7 +184,7 @@ fn write_42() {
 
 #[test]
 fn write_pi() {
-    let dec = Dec64::from_raw_parts(3141592653589793, -15);
+    let dec = Dec64::from_parts(3141592653589793, -15);
 
     let mut buf: Vec<u8> = Vec::new();
 
@@ -179,8 +197,21 @@ fn write_pi() {
 
 
 #[test]
+fn write_pi_from_float() {
+    let dec = Dec64::from(3.141592653589793);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "3.141592653589793");
+}
+
+#[test]
 fn write_midperiod() {
-    let dec = Dec64::from_raw_parts(123456, -3);
+    let dec = Dec64::from_parts(123456, -3);
 
     let mut buf: Vec<u8> = Vec::new();
 
