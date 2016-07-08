@@ -51,8 +51,10 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u64, mut k: i16) -> (i64, i1
         let tmp = ((p1 as u64) << -one.e) + p2;
         if tmp <= delta {
             k += kappa;
+            let power = POW10[kappa as usize];
+            buffer /= power as i64;
 
-            grisu_round(&mut buffer, delta, tmp, (POW10[kappa as usize] as u64) << -one.e, wp_w.f);
+            grisu_round(&mut buffer, delta, tmp, (power as u64) << -one.e, wp_w.f);
             return (buffer, k);
         }
     }
