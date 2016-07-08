@@ -9,7 +9,7 @@ use test::Bencher;
 
 
 #[bench]
-fn f64_write_pi(b: &mut Bencher) {
+fn float_write_pi(b: &mut Bencher) {
     let mut target = Vec::new();
 
     let pi = 3.141592653589793;
@@ -23,9 +23,21 @@ fn f64_write_pi(b: &mut Bencher) {
 fn dec64_write_pi(b: &mut Bencher) {
     let mut target = Vec::new();
 
-    let pi = Dec64::from_raw_parts(3141592653589793, -15);
+    let pi = Dec64::from_parts(3141592653589793, -15);
 
     b.iter(|| {
         pi.write(&mut target).unwrap();
     })
 }
+
+#[bench]
+fn float_to_dec64_write_pi(b: &mut Bencher) {
+    let mut target = Vec::new();
+
+    let pi = 3.141592653589793;
+
+    b.iter(|| {
+        Dec64::from(pi).write(&mut target).unwrap();
+    })
+}
+
