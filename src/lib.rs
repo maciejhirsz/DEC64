@@ -1,10 +1,26 @@
+pub const MAX_COEFFICIENT: i64 = 36028797018963967;
+pub const MIN_COEFFICIENT: i64 = -36028797018963968;
 
+pub static NAN:  Dec64 = Dec64 {
+    value: -128
+};
+pub static ZERO: Dec64 = Dec64 {
+    value: 0
+};
+pub static MAX:  Dec64 = Dec64 {
+    value: (MAX_COEFFICIENT << 8) | (127u8 as i64)
+};
+pub static MIN:  Dec64 = Dec64 {
+    value: (MIN_COEFFICIENT << 8) | (129u8 as i64)
+};
+
+#[derive(Clone, Copy, Debug)]
 pub struct Dec64 {
     value: i64
 }
 
 impl Dec64 {
-    pub fn from_raw_parts(coefficient: i64, exponent: i8) -> Dec64 {
+    pub fn from_raw_parts(coefficient: i64, exponent: i8) -> Self {
         Dec64 {
             // Double casting on exponent so we don't end up with bunch
             // of `1` bits on the left if the exponent is negative
@@ -23,9 +39,32 @@ impl Dec64 {
     }
 
     pub fn is_nan(&self) -> bool {
-        self.coefficient() == 0 && self.exponent() == -128
+        self.exponent() == -128
+    }
+
+    pub fn is_zero(&self) -> bool {
+        self.coefficient() == 0
     }
 }
+
+impl PartialEq<Dec64> for Dec64 {
+    fn eq(&self, other: &Dec64) -> bool {
+        if self.value == other.value {
+            return true;
+        }
+
+        if self.coefficient() | other.coefficient() == 0 {
+            return true;
+        }
+
+        if self.exponent() == -128 && other.exponent() == -128 {
+            return true;
+        }
+
+        false
+    }
+}
+
 
 fn exponent_to_power_f64(e: i8) -> f64 {
     static POS_POWERS: [f64; 23] = [

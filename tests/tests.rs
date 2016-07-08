@@ -109,3 +109,43 @@ fn compose_f32_pi() {
 
     assert_eq!(num, 3.141592653589793);
 }
+
+#[test]
+fn compose_max() {
+    let dec = Dec64::from_raw_parts(dec64::MAX_COEFFICIENT, 127);
+
+    assert_eq!(dec, dec64::MAX);
+}
+
+#[test]
+fn compose_min() {
+    let dec = Dec64::from_raw_parts(dec64::MIN_COEFFICIENT, -127);
+
+    assert_eq!(dec, dec64::MIN);
+}
+
+#[test]
+fn compose_nan() {
+    let nan_normal = Dec64::from_raw_parts(0, -128);
+    let nan_subnormal = Dec64::from_raw_parts(42, -128);
+
+    assert!(nan_normal.is_nan());
+    assert!(nan_subnormal.is_nan());
+    assert_eq!(nan_normal, dec64::NAN);
+    assert_eq!(nan_subnormal, dec64::NAN);
+}
+
+
+#[test]
+fn compose_zero() {
+    let zero_normal = Dec64::from_raw_parts(0, 0);
+    let zero_high = Dec64::from_raw_parts(0, 127);
+    let zero_low = Dec64::from_raw_parts(0, -127);
+
+    assert!(zero_normal.is_zero());
+    assert!(zero_high.is_zero());
+    assert!(zero_low.is_zero());
+    assert_eq!(zero_normal, dec64::ZERO);
+    assert_eq!(zero_high, dec64::ZERO);
+    assert_eq!(zero_low, dec64::ZERO);
+}
