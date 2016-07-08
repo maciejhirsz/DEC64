@@ -1,3 +1,6 @@
+mod diyfp;
+mod grisu2;
+
 use std::{io, mem, ptr, slice};
 
 pub const MAX_COEFFICIENT: i64 = 36028797018963967;
@@ -29,7 +32,7 @@ pub struct Dec64 {
 }
 
 impl Dec64 {
-    pub fn from_raw_parts(coefficient: i64, exponent: i8) -> Self {
+    pub fn from_parts(coefficient: i64, exponent: i8) -> Self {
         Dec64 {
             // Double casting on exponent so we don't end up with bunch
             // of `1` bits on the left if the exponent is negative
@@ -207,6 +210,22 @@ impl From<Dec64> for f64 {
 impl From<Dec64> for f32 {
     fn from(dec: Dec64) -> f32 {
         (dec.coefficient() as f32) * exponent_to_power_f32(dec.exponent())
+    }
+}
+
+impl From<f64> for Dec64 {
+    fn from(float: f64) -> Dec64 {
+        let (coefficient, exponent) = grisu2::convert(float);
+
+        Dec64::from_parts(coefficient, exponent as i8)
+    }
+}
+
+impl From<f32> for Dec64 {
+    fn from(float: f32) -> Dec64 {
+        let (coefficient, exponent) = grisu2::convert(float as f64);
+
+        Dec64::from_parts(coefficient, exponent as i8)
     }
 }
 
