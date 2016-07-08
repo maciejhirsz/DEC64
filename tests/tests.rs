@@ -149,3 +149,44 @@ fn compose_zero() {
     assert_eq!(zero_high, dec64::ZERO);
     assert_eq!(zero_low, dec64::ZERO);
 }
+
+
+#[test]
+fn write_42() {
+    let dec = Dec64::from_raw_parts(42, 0);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "42");
+}
+
+#[test]
+fn write_pi() {
+    let dec = Dec64::from_raw_parts(3141592653589793, -15);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "3.141592653589793");
+}
+
+
+#[test]
+fn write_midperiod() {
+    let dec = Dec64::from_raw_parts(123456, -3);
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    dec.write(&mut buf).unwrap();
+
+    let string = String::from_utf8(buf).unwrap();
+
+    assert_eq!(string, "123.456");
+}
