@@ -148,7 +148,6 @@ impl PartialEq<Dec64> for Dec64 {
     }
 }
 
-
 fn exponent_to_power_f64(e: i8) -> f64 {
     static POS_POWERS: [f64; 23] = [
           1.0,    1e1,    1e2,    1e3,    1e4,    1e5,    1e6,    1e7,
@@ -215,17 +214,29 @@ impl From<Dec64> for f32 {
 
 impl From<f64> for Dec64 {
     fn from(float: f64) -> Dec64 {
-        let (coefficient, exponent) = grisu2::convert(float);
+        if float < 0.0 {
+            let (coefficient, exponent) = grisu2::convert(-float);
 
-        Dec64::from_parts(coefficient, exponent as i8)
+            Dec64::from_parts(-(coefficient as i64), exponent as i8)
+        } else {
+            let (coefficient, exponent) = grisu2::convert(float);
+
+            Dec64::from_parts(coefficient as i64, exponent as i8)
+        }
     }
 }
 
 impl From<f32> for Dec64 {
     fn from(float: f32) -> Dec64 {
-        let (coefficient, exponent) = grisu2::convert(float as f64);
+        if float < 0.0 {
+            let (coefficient, exponent) = grisu2::convert(-float as f64);
 
-        Dec64::from_parts(coefficient, exponent as i8)
+            Dec64::from_parts(-(coefficient as i64), exponent as i8)
+        } else {
+            let (coefficient, exponent) = grisu2::convert(float as f64);
+
+            Dec64::from_parts(coefficient as i64, exponent as i8)
+        }
     }
 }
 
