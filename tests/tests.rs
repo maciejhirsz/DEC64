@@ -182,9 +182,16 @@ fn compose_max() {
 
 #[test]
 fn compose_min() {
-    let dec = Dec64::from_parts(dec64::MIN_COEFFICIENT, -127);
+    let dec = Dec64::from_parts(dec64::MIN_COEFFICIENT, 127);
 
     assert_eq!(dec, dec64::MIN);
+}
+
+#[test]
+fn compose_min_positive() {
+    let dec = Dec64::from_parts(1, -127);
+
+    assert_eq!(dec, dec64::MIN_POSITIVE);
 }
 
 #[test]
@@ -195,7 +202,7 @@ fn compose_nan() {
     assert!(nan_normal.is_nan());
     assert!(nan_subnormal.is_nan());
     assert_eq!(nan_normal, dec64::NAN);
-    assert_eq!(nan_subnormal, dec64::NAN);
+    assert!(nan_subnormal != nan_normal);
 }
 
 
