@@ -7,9 +7,11 @@ pub const NAN_NAN: Dec64 = dec64_raw!(0x8080);
 /// Difference between `1.0` and the previous largest representable number = `1.0_e-16`.
 pub const NEG_EPSILON: Dec64 = dec64_parts!(1, -16_i8);
 /// A non normal `0`.
-pub const ZIP: Dec64 = dec64_raw!(0x33);
+pub const ZIP: Dec64 = dec64_raw!(90);
 /// `0.01`
 pub const CENT: Dec64 = dec64_parts!(1, -2_i8);
+/// `0.1`
+pub const TENTH: Dec64 = dec64_parts!(1, -1_i8);
 /// `0.5`
 pub const HALF: Dec64 = dec64_parts!(5, -1_i8);
 /// `0.9999999999999999`
