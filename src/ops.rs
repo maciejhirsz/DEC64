@@ -3,6 +3,7 @@
 use std::ops::{
     Add,
     Neg,
+    Sub,
 };
 
 use super::{
@@ -114,6 +115,17 @@ impl Add for Dec64 {
         let sum = self.coefficient() + other.coefficient();
 
         Self::pack(sum, self.exponent() as i32)
+    }
+}
+
+/// Currently this doesn't have specialized implementation.
+/// Just add negated number.
+impl Sub for Dec64 {
+    type Output = Dec64;
+
+    #[inline]
+    fn sub(self, other: Dec64) -> Dec64 {
+        self.add(-other)
     }
 }
 
