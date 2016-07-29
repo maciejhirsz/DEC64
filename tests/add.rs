@@ -1,13 +1,12 @@
 extern crate dec64;
 
-mod macros;
-
 use dec64::Dec64;
 use dec64::ZERO;
 use dec64::NAN;
 use dec64::more_consts::NAN_NAN;
 use dec64::more_consts::NEG_FIFTH;
 use dec64::more_consts::NEG_TENTH;
+use dec64::more_consts::ZIP;
 use dec64::more_consts::normal::ONE;
 use dec64::more_consts::normal::TWO;
 use dec64::more_consts::normal::NEG_ONE;
@@ -30,6 +29,22 @@ fn add_zero() {
 }
 
 #[test]
+fn add_zip() {
+	assert_eq!(ZERO + ZIP, ZERO);
+	assert_eq!(ZIP + ZERO, ZERO);
+	assert_eq!(ZIP + ZIP, ZERO);
+
+	assert_eq!(ZIP + ONE, ONE);
+	assert_eq!(ONE + ZIP, ONE);
+
+	assert_eq!(ZIP + dec64::MAX, dec64::MAX);
+	assert_eq!(dec64::MAX + ZIP, dec64::MAX);
+
+	assert_eq!(ZIP + dec64::MIN, dec64::MIN);
+	assert_eq!(dec64::MIN + ZIP, dec64::MIN);
+}
+
+#[test]
 fn add_trivial() {
 	assert_eq!(ONE + ONE, TWO);
 	assert_eq!(ONE + NEG_ONE, ZERO);
@@ -49,6 +64,9 @@ fn add_nan() {
 
 	assert_eq!(NAN_NAN + ZERO, NAN);
 	assert_eq!(ZERO + NAN_NAN, NAN);
+
+	assert_eq!(NAN_NAN + ZIP, NAN);
+	assert_eq!(ZIP + NAN_NAN, NAN);
 
 	assert_eq!(NAN_NAN + ONE, NAN);
 	assert_eq!(ONE + NAN_NAN, NAN);
