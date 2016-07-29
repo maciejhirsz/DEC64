@@ -13,12 +13,12 @@ use super::{
 impl Add for Dec64 {
     type Output = Dec64;
 
-    fn add(self, rhs: Self) -> Self {
-        let _sum_overflown = if self.exponent() == 0 && rhs.exponent() == 0 {
+    fn add(self, other: Dec64) -> Dec64 {
+        let _sum_overflown = if self.exponent() == 0 && other.exponent() == 0 {
             // If the two exponents are both zero (which is usually the case for integers)
             // we can take the fast path. Since the exponents are both zero, we can simply
             // add the numbers together and check for overflow.
-            let (sum, overflow) = self.value.overflowing_add(rhs.value);
+            let (sum, overflow) = self.value.overflowing_add(other.value);
             if !overflow {
                 return dec64_raw!(sum);
             }
@@ -29,11 +29,11 @@ impl Add for Dec64 {
             if self.is_nan() {
                 // If the first operand is NaN return NaN.
                 return NAN;
-            } else if self.exponent() == rhs.exponent() {
+            } else if self.exponent() == other.exponent() {
                 // The exponents match so we may add now. Zero out the exponents so there
                 // will be no carry into the coefficients when the coefficients are added.
                 // If the result is zero, then return the normal zero.
-                let (sum, overflow) = (self.value & COEFFICIENT_MASK).overflowing_add(rhs.value & COEFFICIENT_MASK);
+                let (sum, overflow) = (self.value & COEFFICIENT_MASK).overflowing_add(other.value & COEFFICIENT_MASK);
                 if !overflow {
                     return dec64_parts!(sum >> 8, self.exponent());
                 }
@@ -42,16 +42,16 @@ impl Add for Dec64 {
             } else {
                 // The slower path is taken when neither operand is nan, and their
                 // exponents are different.
-                if rhs.is_nan() {
+                if other.is_nan() {
                     return NAN;
                 }
 
                 // Before addition can take place, the exponents
                 // must be made to match.
-                let (hi, lo) = if self.exponent() > rhs.exponent() {
-                    (self, rhs)
+                let (hi, lo) = if self.exponent() > other.exponent() {
+                    (self, other)
                 } else {
-                    (rhs, self)
+                    (other, self)
                 };
 
                 let mut lo_coefficient = lo.coefficient();
@@ -109,10 +109,9 @@ impl Add for Dec64 {
         // Re-add shifted coefficients (this won't overflow) and pack.
         // In original implementation of this path is much more elegant,
         // But here we don't have access to the carry flag.
-        let sum = self.coefficient() + rhs.coefficient();
+        let sum = self.coefficient() + other.coefficient();
 
         Self::pack(sum, self.exponent() as i32)
     }
 }
-
 
